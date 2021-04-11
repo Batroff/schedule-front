@@ -1,8 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="schedule.co.flutter_app_1">
+    package="schedule.co.schedule">
    <application
-        android:label="flutter_app_1"
-        android:icon="@mipmap/ic_launcher">
+        android:label="schedule"
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

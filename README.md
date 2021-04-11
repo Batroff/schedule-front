@@ -1,2 +1,2 @@
-# schedule-front
+# schedule
 Schedule front

@@ -1,4 +1,4 @@
-package schedule.co.flutter_app_1;
+package schedule.co.schedule;
 
 import io.flutter.embedding.android.FlutterActivity;
 
