@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app_1/notes.dart';
-import 'package:http/http.dart' as http;
+import 'package:schedule/notes.dart';
+import 'http_client.dart';
 
 
 
@@ -78,8 +78,7 @@ class SecondScreenSearch extends State<SecondScreen> {
   List<Note> _notesForDisplay = List<Note>();
 
   Future<List<Note>> fetchNotes() async {
-    var url = '';
-    var response = await http.get(url);
+    request("БСБО-01-20");
 
     var notes = List<Note>();
 
