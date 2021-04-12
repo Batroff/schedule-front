@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class Group {
   String name;
   int subGroup;
@@ -16,6 +18,19 @@ class Group {
     });
 
     return Group(name, subGroup, days);
+  }
+
+  void showInfo() {
+    print("Group name: ${this.name}, subgroup: ${this.subGroup}");
+    days.forEach((day, lessons) {
+      stdout.write("$day: [\n");
+      lessons.forEach((lesson) {
+        stdout.write("\tlesson: [\n");
+        lesson.showInfo();
+        stdout.write("\t],\n");
+      });
+      stdout.write("], \n");
+    });
   }
 }
 
@@ -44,15 +59,15 @@ class Lesson {
         subGroup = json['subGroup'];
 
   void showInfo() {
-    print("subject: $subject, "
-          "typeOfLesson: $typeOfLesson, "
-          "teacherName: $teacherName, "
-          "cabinet: $cabinet, "
-          "numberLesson: $numberLesson, "
-          "dayOfWeek: $dayOfWeek, "
-          "occurrenceLesson: $occurrenceLesson, "
-          "exists: $exists, "
-          "subGroup: $subGroup"
+    print("\t\tsubject: ${this.subject}, \n"
+          "\t\ttypeOfLesson: ${this.typeOfLesson}, \n"
+          "\t\tteacherName: ${this.teacherName}, \n"
+          "\t\tcabinet: ${this.cabinet}, \n"
+          "\t\tnumberLesson: ${this.numberLesson}, \n"
+          "\t\tdayOfWeek: ${this.dayOfWeek}, \n"
+          "\t\toccurrenceLesson: ${this.occurrenceLesson}, \n"
+          "\t\texists: ${this.exists}, \n"
+          "\t\tsubGroup:${this.subGroup}."
     );
   }
 }
