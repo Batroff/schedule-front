@@ -40,12 +40,9 @@ class Lesson {
   String teacherName;
   String cabinet;
   int numberLesson;
-  String dayOfWeek;
   List<bool> occurrenceLesson;
-  bool exists;
-  int subGroup;
 
-  Lesson(this.subject, this.typeOfLesson, this.teacherName, this.cabinet, this.numberLesson, this.dayOfWeek, this.occurrenceLesson, this.exists, this.subGroup);
+  Lesson(this.subject, this.typeOfLesson, this.teacherName, this.cabinet, this.numberLesson, this.occurrenceLesson);
 
   Lesson.fromJson(Map<String, dynamic> json) :
         subject = json['subject'],
@@ -53,10 +50,7 @@ class Lesson {
         teacherName = json['teacherName'],
         cabinet = json['cabinet'],
         numberLesson = json['numberLesson'],
-        dayOfWeek = json['dayOfWeek'],
-        occurrenceLesson = new List<bool>.from(json['occurrenceLesson']),
-        exists = json['exists'],
-        subGroup = json['subGroup'];
+        occurrenceLesson = new List<bool>.from(json['occurrenceLesson']);
 
   void showInfo() {
     print("\t\tsubject: ${this.subject}, \n"
@@ -64,10 +58,7 @@ class Lesson {
           "\t\tteacherName: ${this.teacherName}, \n"
           "\t\tcabinet: ${this.cabinet}, \n"
           "\t\tnumberLesson: ${this.numberLesson}, \n"
-          "\t\tdayOfWeek: ${this.dayOfWeek}, \n"
-          "\t\toccurrenceLesson: ${this.occurrenceLesson}, \n"
-          "\t\texists: ${this.exists}, \n"
-          "\t\tsubGroup:${this.subGroup}."
+          "\t\toccurrenceLesson: ${this.occurrenceLesson}."
     );
   }
 }
