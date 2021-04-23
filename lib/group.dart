@@ -12,6 +12,10 @@ class Group {
     var subGroup = json['subgroup'];
     var daysFromJson = json['days'];
 
+    if (daysFromJson == null) {
+      return null;
+    }
+
     Map<String, List<Lesson>> days = new Map();
     daysFromJson.forEach((dayName, lessons) {
       days[dayName] = new List<Lesson>.from(lessons.map((l) => Lesson.fromJson(l)));

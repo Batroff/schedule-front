@@ -3,18 +3,35 @@ import 'dart:convert';
 
 import 'group.dart';
 
-class Response {
+class ResponseGroup {
   String errorMsg;
   Group group;
 
-  Response(this.errorMsg, this.group);
+  ResponseGroup(this.errorMsg, this.group);
 
-  Response.fromJson(Map<String, dynamic> json) :
+  ResponseGroup.fromJson(Map<String, dynamic> json) :
       errorMsg = json['ErrorMsg'],
       group = Group.fromJson(json['Group']);
+
+  static ResponseGroup deserialize(json) {
+    Map<String, dynamic> jsonDecoded = jsonDecode(json);
+    return ResponseGroup.fromJson(jsonDecoded);
+  }
 }
 
-Response deserialize(json) {
-  Map<String, dynamic> jsonDecoded = jsonDecode(json);
-  return Response.fromJson(jsonDecoded);
+class ResponseGroupList {
+  String errorMsg;
+  Map<String, bool> groupList;
+
+
+  ResponseGroupList(this.errorMsg, this.groupList);
+
+  ResponseGroupList.fromJson(Map<String, dynamic> json) :
+      errorMsg = json['ErrorMsg'],
+      groupList = Map<String, bool>.from(json['GroupList']['map']);
+
+  static ResponseGroupList deserialize(json) {
+    Map<String, dynamic> jsonDecoded = jsonDecode(json);
+    return ResponseGroupList.fromJson(jsonDecoded);
+  }
 }

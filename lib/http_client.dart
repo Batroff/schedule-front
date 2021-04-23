@@ -6,11 +6,18 @@ import 'response_decoder.dart';
 
 // DEBUG ENTRY POINT
 void main() async {
-  var res = await new Client("127.0.0.1:8080").requestJson(method: "GET", location: "", query: {"group": "БСБО-01-20"});
-  var resDecoded = deserialize(res);
-
-  var group = resDecoded.group;
-  group.showInfo();
+  // var res = await new Client("127.0.0.1:8080").requestJson(method: "GET", location: "/api/group/", query: {"group": "БСGБО-01-20"});
+  // var resDecoded = ResponseGroup.deserialize(res);
+  //
+  // var group = resDecoded.group;
+  // if (group != null) {
+  //   group.showInfo();
+  // } else {
+  //   print("group is null");
+  // }
+  var res = await new Client("127.0.0.1:8080").requestJson(method: "GET", location: "/api/groupList");
+  var resDecoded = ResponseGroupList.deserialize(res);
+  print(resDecoded.groupList);
 }
 
 class Client {
@@ -31,7 +38,7 @@ class Client {
 
     if (response.statusCode == 200) {
       return response;
-    }
+    } else return response;//если статус код не 200 в теле ответа есть сообщение об ошибке
     throw HttpException("Expected 200 status code, got ${response.statusCode} caused by ${response.reasonPhrase}");
   }
 
