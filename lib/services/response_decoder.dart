@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 
-import 'group.dart';
+import '../models/group.dart';
 
 class ResponseGroup {
   String errorMsg;
