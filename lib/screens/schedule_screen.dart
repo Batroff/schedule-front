@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
+//import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:schedule/models/group.dart';
 import 'package:schedule/services/http_client.dart';
@@ -10,12 +10,24 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
+class Data{// ???
+  static Group group;
+}
+
 class ThirdScreen extends StatefulWidget{
   @override
   _ThirdScreenState createState() => _ThirdScreenState();
 }
 
 class _ThirdScreenState extends State<ThirdScreen> {
+  Future<Group> fetchGroup() async{
+    var res = await new Client("10.0.2.2:8080").requestJson(method: "GET", location: "/api/group/", query: {"name": "БСБО-05-19"});
+    var resDecoded = ResponseGroup.deserialize(res);
+    var group = resDecoded.group;
+    return group;
+  }
+
+  Future<Group> futureGroup;
 
   List<Lesson> lessons = [
     Lesson('410', 'Беклемишев', '1', 'П', 'Math'),
@@ -26,9 +38,10 @@ class _ThirdScreenState extends State<ThirdScreen> {
   CalendarController _calendarController;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _calendarController = CalendarController();
+    futureGroup = fetchGroup();
   }
 
   @override
@@ -48,52 +61,118 @@ class _ThirdScreenState extends State<ThirdScreen> {
             color: Colors.white
           ), ),
         ),
-        body: Column(
-          children: [
-            TableCalendar(
-                calendarController: _calendarController,
-                initialCalendarFormat: CalendarFormat.week,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              formatAnimation: FormatAnimation.slide,
-              headerStyle: HeaderStyle(
-                centerHeaderTitle: true,
-                formatButtonVisible: true,
-                formatButtonTextStyle: TextStyle(
-                  color: Colors.white
-                ),
-                titleTextStyle: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18
-                ),
-                leftChevronIcon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 14,),
-                rightChevronIcon: Icon(Icons.arrow_forward_ios, color: Colors.white, size: 14,),
-                leftChevronMargin: EdgeInsets.only(left: 10),
-                rightChevronMargin: EdgeInsets.only(right:10),
-              ),
-             calendarStyle: CalendarStyle(
-               weekdayStyle: TextStyle(
-                 color: Colors.white
-               ),
-               weekendStyle: TextStyle(
-                 color: Colors.white
-               )
-             ),
-              daysOfWeekStyle: DaysOfWeekStyle(
-                weekendStyle: TextStyle(
-                  color: Colors.white),
-                weekdayStyle: TextStyle(
-                  color: Colors.white)
-                ),
-              ),
-            Expanded(
-                child: ListView.builder(
-                  itemCount: lessons.length,
-                  itemBuilder: (context, index){
-                    return lessonBar(lessons[index].cabinet, lessons[index].teacherName, lessons[index].numberOfLesson, lessons[index].lessonType, lessons[index].subject);
-                  })
-            )
-          ]
+        body:
+        FutureBuilder<Group>(
+          future: futureGroup,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              snapshot.data.showInfo();
+              Data.group = snapshot.data;
+              Group group = snapshot.data;
+              return Column(
+                    children: [
+                      TableCalendar(
+                          calendarController: _calendarController,
+                          initialCalendarFormat: CalendarFormat.week,
+                        startingDayOfWeek: StartingDayOfWeek.monday,
+                        formatAnimation: FormatAnimation.slide,
+                        headerStyle: HeaderStyle(
+                          centerHeaderTitle: true,
+                          formatButtonVisible: true,
+                          formatButtonTextStyle: TextStyle(
+                            color: Colors.white
+                          ),
+                          titleTextStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18
+                          ),
+                          leftChevronIcon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 14,),
+                          rightChevronIcon: Icon(Icons.arrow_forward_ios, color: Colors.white, size: 14,),
+                          leftChevronMargin: EdgeInsets.only(left: 10),
+                          rightChevronMargin: EdgeInsets.only(right:10),
+                        ),
+                       calendarStyle: CalendarStyle(
+                         weekdayStyle: TextStyle(
+                           color: Colors.white
+                         ),
+                         weekendStyle: TextStyle(
+                           color: Colors.white
+                         )
+                       ),
+                        daysOfWeekStyle: DaysOfWeekStyle(
+                          weekendStyle: TextStyle(
+                            color: Colors.white),
+                          weekdayStyle: TextStyle(
+                            color: Colors.white)
+                          ),
+                        ),
+                      Expanded(
+                          // child: ListView.builder(
+                          //   itemCount: lessons.length,
+                          //   itemBuilder: (context, index){
+                          //     return lessonBar(lessons[index].cabinet, lessons[index].teacherName, lessons[index].numberOfLesson, lessons[index].lessonType, lessons[index].subject);
+                          //   })
+                          child: ListView.builder(
+                              itemCount: group.days["ПЯТНИЦА"].length,
+                              itemBuilder: (context, index){
+                                return lessonBar(group.days["ПЯТНИЦА"][index].cabinet, group.days["ПЯТНИЦА"][index].teacherName, group.days["ПЯТНИЦА"][index].numberLesson.toString(), group.days["ПЯТНИЦА"][index].typeOfLesson, group.days["ПЯТНИЦА"][index].subject);
+                              })
+                      )
+                    ]
+                  );
+            } else {
+              return Column(
+
+              );
+            }
+          },
         ),
+        // Column(
+        //   children: [
+        //     TableCalendar(
+        //         calendarController: _calendarController,
+        //         initialCalendarFormat: CalendarFormat.week,
+        //       startingDayOfWeek: StartingDayOfWeek.monday,
+        //       formatAnimation: FormatAnimation.slide,
+        //       headerStyle: HeaderStyle(
+        //         centerHeaderTitle: true,
+        //         formatButtonVisible: true,
+        //         formatButtonTextStyle: TextStyle(
+        //           color: Colors.white
+        //         ),
+        //         titleTextStyle: TextStyle(
+        //           color: Colors.white,
+        //           fontSize: 18
+        //         ),
+        //         leftChevronIcon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 14,),
+        //         rightChevronIcon: Icon(Icons.arrow_forward_ios, color: Colors.white, size: 14,),
+        //         leftChevronMargin: EdgeInsets.only(left: 10),
+        //         rightChevronMargin: EdgeInsets.only(right:10),
+        //       ),
+        //      calendarStyle: CalendarStyle(
+        //        weekdayStyle: TextStyle(
+        //          color: Colors.white
+        //        ),
+        //        weekendStyle: TextStyle(
+        //          color: Colors.white
+        //        )
+        //      ),
+        //       daysOfWeekStyle: DaysOfWeekStyle(
+        //         weekendStyle: TextStyle(
+        //           color: Colors.white),
+        //         weekdayStyle: TextStyle(
+        //           color: Colors.white)
+        //         ),
+        //       ),
+        //     Expanded(
+        //         child: ListView.builder(
+        //           itemCount: lessons.length,
+        //           itemBuilder: (context, index){
+        //             return lessonBar(lessons[index].cabinet, lessons[index].teacherName, lessons[index].numberOfLesson, lessons[index].lessonType, lessons[index].subject);
+        //           })
+        //     )
+        //   ]
+        // ),
       );
     }
 }
