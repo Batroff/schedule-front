@@ -6,6 +6,9 @@ import 'package:schedule/models/group.dart';
 import 'package:schedule/services/http_client.dart';
 import 'package:schedule/services/response_decoder.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:async';
 
 class ThirdScreen extends StatefulWidget{
   @override
@@ -14,6 +17,12 @@ class ThirdScreen extends StatefulWidget{
 
 class _ThirdScreenState extends State<ThirdScreen> {
 
+  List<Lesson> lessons = [
+    Lesson('410', 'Беклемишев', '1', 'П', 'Math'),
+    Lesson('410', 'АНТОНОВА', '1', 'П', 'Math'),
+    Lesson('410', 'ЧИСТЯКОВА', '1', 'П', 'Math'),
+    Lesson('410', 'ШАМИЛЬ', '1', 'П', 'Math')
+  ];
   CalendarController _calendarController;
 
   @override
@@ -76,87 +85,85 @@ class _ThirdScreenState extends State<ThirdScreen> {
                   color: Colors.white)
                 ),
               ),
-
             Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  child: Container(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Column(
-                            children: [
-                              lessonBar('Math', 'П', 'Беклемишев', '214', '1'),
-                            ]
-
-                          )
-                        ],
-                      )
-                    )
-                  )
-                ),)
-
-          ],
-        )
+                child: ListView.builder(
+                  itemCount: lessons.length,
+                  itemBuilder: (context, index){
+                    return lessonBar(lessons[index].cabinet, lessons[index].teacherName, lessons[index].numberOfLesson, lessons[index].lessonType, lessons[index].subject);
+                  })
+            )
+          ]
+        ),
       );
     }
 }
 
-Row lessonBar(String subject, String typeOfLesson, String teacherName, String cabinet, String numberLesson){
+Row lessonBar(String cabinet, String teacherName, String numberOfLesson, String lessonType, String subject){
   return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Column(
-        children: [
-          Container(
-            padding: EdgeInsets.only(left:20, right:20, top:20, bottom: 10),
-            child:Text(cabinet, style: TextStyle(
-              color: Colors.white,)
-            )
-          ),
-          SizedBox(width: 30, height: 1, child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Container(
+                padding: EdgeInsets.only(left:20, right:20, top:20, bottom: 10),
+                child:Text(cabinet, style: TextStyle(
+                  color: Colors.white,)
+                )
             ),
-          )),
-          Container(
-            padding: EdgeInsets.only(left:20, right: 20, bottom: 20, top: 10),
-            child: Text(numberLesson, style: TextStyle(
-              color: Colors.white,
+            SizedBox(width: 30, height: 1, child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
             )),
-          )
+            Container(
+              padding: EdgeInsets.only(left:20, right: 20, bottom: 20, top: 10),
+              child: Text(numberOfLesson, style: TextStyle(
+                color: Colors.white,
+              )),
+            )
 
-  ],
-      ),
-      SizedBox(height: 10,),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.only(left:20, right:20, top: 20, bottom: 15),
-            child: Text(subject, style: TextStyle(
-              color: Colors.white,
-            ))
-          ),
-          SizedBox(height: 10),
-          Container(
-            padding: EdgeInsets.only(left: 20, right: 20),
-            child: Text(teacherName, style: TextStyle(
-              color: Colors.white,
-            ))
-          )
-        ],
+          ],
+        ),
+        SizedBox(height: 10,),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+                padding: EdgeInsets.only(left:20, right:20, top: 20, bottom: 15),
+                child: Text(subject, style: TextStyle(
+                  color: Colors.white,
+                ))
+            ),
+            SizedBox(height: 10),
+            Container(
+                padding: EdgeInsets.only(left: 20, right: 20),
+                child: Text(teacherName, style: TextStyle(
+                  color: Colors.white,
+                ))
+            )
+          ],
 
-      ),
-      Expanded(
-        child: Container(),
-      ),
-      Container(
-        padding: EdgeInsets.only(right:20, top: 20),
-        child: Text(typeOfLesson, style: TextStyle(
-          color: Colors.white
-        )),
-      )
-    ]
+        ),
+        Expanded(
+          child: Container(),
+        ),
+        Container(
+          padding: EdgeInsets.only(right:20, top: 20),
+          child: Text(lessonType, style: TextStyle(
+              color: Colors.white
+          )),
+        )
+      ]
   );
+}
+
+class Lesson{
+  final String cabinet;
+  final String teacherName;
+  final String numberOfLesson;
+  final String lessonType;
+  final String subject;
+
+  Lesson(this.cabinet, this.teacherName, this.numberOfLesson, this.lessonType, this.subject);
+
 }
