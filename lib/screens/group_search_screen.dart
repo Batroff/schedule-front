@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:schedule/models/group.dart';
 import 'package:schedule/services/http_client.dart';
+import 'package:schedule/services/save.dart';
 import 'package:schedule/services/response_decoder.dart';
 
 class SecondScreen extends StatefulWidget {
@@ -8,29 +11,34 @@ class SecondScreen extends StatefulWidget {
   SecondScreenSearch createState() => SecondScreenSearch();
 }
 
-
-
 class SecondScreenSearch extends State<SecondScreen> {
-  // ignore: deprecated_member_use
-  List<Group> _group = List<Group>();
-  // ignore: deprecated_member_use
-  List<Group> _groupsForDisplay = List<Group>();
+  List<String> _groupList = [];
 
-  Future<List<Group>> fetchNotes() async {
-    var res = await new Client("127.0.0.1:8080").requestJson(method: "GET", location: "", query: {"group": "БСБО-01-20"});
-    var resDecoded = ResponseGroup.deserialize(res);
-
-    var group = resDecoded.group;
-    group.showInfo();
+  List<String> _groupListForDisplay = [];
+  
+  Future<Map<String, bool>> fetchGroupList() async {
+    var res = await new Client("10.0.2.2:8080").requestJson(method: "GET", location: "/api/groupList/");
+    var resDecoded = ResponseGroupList.deserialize(res);
+    Map<String, bool> groupList = resDecoded.groupList;
+    print(groupList);
+    return groupList;
   }
 
+  Future<String> fetchGroupJson() async {
+    var res = await new Client("192.168.1.149:8080").requestJson(method: "GET", location: "/api/group/", query: {"name": "БСБО-05-19"});//надо подтянуть из поля с номером группы саму группу в query
+    print(res);
+    var resDecoded = ResponseGroup.deserialize(res);
+    String groupJson = jsonEncode(resDecoded.group.toJson());
+    return groupJson;
+  }
 
   @override
   void initState() {
-    fetchNotes().then((value) {
+    fetchGroupList().then((groupList) {
       setState(() {
-        _group.addAll(value);
-        _groupsForDisplay = _group;
+        _groupList = groupList.keys.toList();
+        print(_groupList);
+        _groupListForDisplay = _groupList;
       });
     });
     super.initState();
@@ -44,7 +52,11 @@ class SecondScreenSearch extends State<SecondScreen> {
           title: Text('Выбор группы'),
           actions: <Widget>[
             IconButton(
-              onPressed: (){Navigator.pushNamed(context, '/third');},
+              onPressed: () async{
+                var groupJson = await fetchGroupJson();
+                saveGroup(groupJson);
+                Navigator.pushNamed(context, '/third');
+                },
               icon: Icon(Icons.arrow_forward),
             )
           ],
@@ -53,7 +65,7 @@ class SecondScreenSearch extends State<SecondScreen> {
           itemBuilder: (context, index) {
             return index == 0 ? _searchBar() : _listItem(index-1);
           },
-          itemCount: _groupsForDisplay.length+1,
+          itemCount: _groupListForDisplay.length+1,
         )
     );
   }
@@ -68,9 +80,8 @@ class SecondScreenSearch extends State<SecondScreen> {
         onChanged: (text) {
           text = text.toLowerCase();
           setState(() {
-            _groupsForDisplay = _group.where((note) {
-              var noteTitle = note.name.toLowerCase();
-              return noteTitle.contains(text);
+            _groupListForDisplay = _groupList.where((name) {
+              return name.toLowerCase().contains(text);
             }).toList();
           });
         },
@@ -87,14 +98,14 @@ class SecondScreenSearch extends State<SecondScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              _groupsForDisplay[index].name,
+              _groupListForDisplay[index],
               style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold
               ),
             ),
             Text(
-              _groupsForDisplay[index].name,
+              _groupListForDisplay[index],
               style: TextStyle(
                   color: Colors.white
               ),
