@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 class Group {
@@ -24,6 +25,12 @@ class Group {
     return Group(name, subGroup, days);
   }
 
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'subgroup': subGroup,
+    'days': days,
+  };
+
   void showInfo() {
     print("Group name: ${this.name}, subgroup: ${this.subGroup}");
     days.forEach((day, lessons) {
@@ -35,6 +42,23 @@ class Group {
       });
       stdout.write("], \n");
     });
+  }
+
+  bool equals(Group someGroup){
+    if (someGroup.name == this.name){
+      if (someGroup.subGroup == this.subGroup){
+        for(var item in this.days.entries){
+          if(someGroup.days[item.key].length == this.days[item.key].length){
+            for(var i = 0; i < this.days[item.key].length; i++){
+              if (someGroup.days[item.key][i].equals(this.days[item.key][i])){
+
+              } else return false;
+            }
+          } else return false;
+        }
+      } else return false;
+    } else return false;
+    return true;
   }
 }
 
@@ -56,6 +80,15 @@ class Lesson {
         numberLesson = json['numberLesson'],
         occurrenceLesson = new List<bool>.from(json['occurrenceLesson']);
 
+  Map<String, dynamic> toJson() => {
+    'subject': subject,
+    'typeOfLesson': typeOfLesson,
+    'teacherName': teacherName,
+    'cabinet': cabinet,
+    'numberLesson': numberLesson,
+    'occurrenceLesson': occurrenceLesson,
+  };
+
   void showInfo() {
     print("\t\tsubject: ${this.subject}, \n"
           "\t\ttypeOfLesson: ${this.typeOfLesson}, \n"
@@ -64,5 +97,26 @@ class Lesson {
           "\t\tnumberLesson: ${this.numberLesson}, \n"
           "\t\toccurrenceLesson: ${this.occurrenceLesson}."
     );
+  }
+
+  bool equals(Lesson someLesson){
+    if (this.subject == someLesson.subject){
+      if (this.typeOfLesson == someLesson.typeOfLesson){
+        if (this.numberLesson == someLesson.numberLesson){
+          if (this.cabinet == someLesson.cabinet){
+            if (this.teacherName == someLesson.teacherName){
+              if (this.occurrenceLesson.length == someLesson.occurrenceLesson.length){
+                for (var i=0; i<this.occurrenceLesson.length; i++){
+                  if (this.occurrenceLesson[i] == someLesson.occurrenceLesson[i]){
+
+                  } else return false;
+                }
+              } else return false;
+            } else return false;
+          } else return false;
+        } else return false;
+      } else return false;
+    } else return false;
+    return true;
   }
 }
