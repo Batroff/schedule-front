@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:schedule/models/group.dart';
 import 'package:schedule/services/http_client.dart';
 import 'package:schedule/services/save.dart';
@@ -17,7 +19,10 @@ class SecondScreenSearch extends State<SecondScreen> {
   List<String> _groupListForDisplay = [];
   
   Future<Map<String, bool>> fetchGroupList() async {
-    var res = await new Client("10.0.2.2:8080").requestJson(method: "GET", location: "/api/groupList/");
+    //var res = await new Client("192.168.1.45:8080").requestJson(method: "GET", location: "/api/groupList/");
+    var directory = await getExternalStorageDirectory();
+    var file = File('${directory.path}/groupList.txt');
+    String res = await file.readAsString();
     var resDecoded = ResponseGroupList.deserialize(res);
     Map<String, bool> groupList = resDecoded.groupList;
     print(groupList);
@@ -25,8 +30,11 @@ class SecondScreenSearch extends State<SecondScreen> {
   }
 
   Future<String> fetchGroupJson() async {
-    var res = await new Client("192.168.1.149:8080").requestJson(method: "GET", location: "/api/group/", query: {"name": "БСБО-05-19"});//надо подтянуть из поля с номером группы саму группу в query
-    print(res);
+    //var res = await new Client("192.168.1.45:8080").requestJson(method: "GET", location: "/api/group/", query: {"name": "БСБО-05-19"});//надо подтянуть из поля с номером группы саму группу в query
+    var directory = await getExternalStorageDirectory();
+    var file = File('${directory.path}/group.txt');
+    print(directory.path);
+    String res = await file.readAsString();
     var resDecoded = ResponseGroup.deserialize(res);
     String groupJson = jsonEncode(resDecoded.group.toJson());
     return groupJson;
@@ -54,7 +62,7 @@ class SecondScreenSearch extends State<SecondScreen> {
             IconButton(
               onPressed: () async{
                 var groupJson = await fetchGroupJson();
-                saveGroup(groupJson);
+                await saveGroup(groupJson);
                 Navigator.pushNamed(context, '/third');
                 },
               icon: Icon(Icons.arrow_forward),
@@ -100,14 +108,9 @@ class SecondScreenSearch extends State<SecondScreen> {
             Text(
               _groupListForDisplay[index],
               style: TextStyle(
+                color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.bold
-              ),
-            ),
-            Text(
-              _groupListForDisplay[index],
-              style: TextStyle(
-                  color: Colors.white
               ),
             ),
           ],
