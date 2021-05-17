@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:schedule/models/group.dart';
 import 'package:schedule/services/save.dart';
@@ -20,9 +21,15 @@ class ThirdScreen extends StatefulWidget {
 class _ThirdScreenState extends State<ThirdScreen> {
 
   CalendarController _calendarController;
-  final groupStream = StreamController<Group>();
+  int weekDay = 1;
+  StreamController<int> _days;
+  String dayCurrent;
 
 
+  void dayChange(int){
+    weekDay = _calendarController.selectedDay.weekday;
+    _days.add(weekDay);
+  }
 
 
   @override
@@ -32,15 +39,42 @@ class _ThirdScreenState extends State<ThirdScreen> {
     });
     super.initState();
     _calendarController = CalendarController();
-
+    _days = new StreamController<int>();
+    _days.add(1);
   }
+
 
   @override
   void dispose() {
     _calendarController.dispose();
-    groupStream.close();
     super.dispose();
   }
+
+
+  String dayFormat(){
+    switch(_calendarController.focusedDay.weekday) {
+      case 1:
+        dayCurrent = "ПОНЕДЕЛЬНИК";
+        break;
+        case 2:
+        dayCurrent = "ВТОРНИК";
+        break;
+      case 3:
+        dayCurrent = "СРЕДА";
+        break;
+      case 4:
+        dayCurrent = "ЧЕТВЕРГ";
+        break;
+      case 5:
+        dayCurrent = "ПЯТНИЦА";
+        break;
+      case 6:
+        dayCurrent = "СУББОТА";
+        break;
+      }
+      return dayCurrent;
+    }
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,13 +88,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: StreamBuilder(
-        stream: groupStream.stream,
-        builder: (context, AsyncSnapshot<dynamic> snapshot) {
-          if (!snapshot.hasData) {return CircularProgressIndicator();}
-            DateTime selectedDate = _calendarController.selectedDay;
-            final selectedDays = Data.group.days[selectedDate];
-            return Column(children: [
+      body: Column(children: [
               TableCalendar(
                 calendarController: _calendarController,
                 initialCalendarFormat: CalendarFormat.week,
@@ -90,27 +118,39 @@ class _ThirdScreenState extends State<ThirdScreen> {
                 daysOfWeekStyle: DaysOfWeekStyle(
                     weekendStyle: TextStyle(color: Colors.white),
                     weekdayStyle: TextStyle(color: Colors.white)),
+                onDaySelected: (date,events, holidays){
+                  setState(() {
+
+                    dayChange(_calendarController.selectedDay.weekday);
+                  });
+                }
 
               ),
               Expanded(
-                  child: ListView.builder(
-                      itemCount: selectedDays.length,
+                child:StreamBuilder(
+                    stream: _days.stream,
+                    builder: (context, snapshot){
+                      return ListView.builder(
+                      itemCount: Data.group.days[dayFormat()].length,
                       itemBuilder: (context, index) {
                         return lessonBar(
-                            selectedDays[index].cabinet,
-                            selectedDays[index].teacherName,
-                            selectedDays[index].numberLesson
-                                .toString(),
-                            selectedDays[index].typeOfLesson,
-                            selectedDays[index].subject);
-                      }))
-            ]);
-          }
+                          Data.group.days[dayFormat()][index].cabinet,
+                          Data.group.days[dayFormat()][index].teacherName,
+                          Data.group.days[dayFormat()][index].numberLesson
+                              .toString(),
+                          Data.group.days[dayFormat()][index].typeOfLesson,
+                          Data.group.days[dayFormat()][index].subject);
 
-      )
-    );
-  }
-}
+                      });
+                }
+              )
+              )
+  ]));}
+
+
+
+
+
 
 Row lessonBar(String cabinet, String teacherName, String numberOfLesson,
     String lessonType, String subject) {
@@ -169,7 +209,9 @@ Row lessonBar(String cabinet, String teacherName, String numberOfLesson,
     ),
     Container(
       padding: EdgeInsets.only(right: 10, top: 20),
-      child: Text(lessonType.toUpperCase(), style: TextStyle(color: Colors.white)),
+      child: Text(
+          lessonType.toUpperCase(), style: TextStyle(color: Colors.white)),
     )
   ]);
+}
 }
