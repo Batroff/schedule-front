@@ -1,9 +1,8 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:schedule/models/group.dart';
-import 'package:schedule/services/http_client.dart';
-import 'package:schedule/services/response_decoder.dart';
 import 'package:schedule/services/save.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'dart:async';
@@ -13,36 +12,33 @@ class Data {
 }
 
 class ThirdScreen extends StatefulWidget {
+
   @override
   _ThirdScreenState createState() => _ThirdScreenState();
 }
 
 class _ThirdScreenState extends State<ThirdScreen> {
-  Future<Group> fetchGroup() async {
-    var res = await new Client("10.0.2.2:8080").requestJson(
-        method: "GET", location: "/api/group/", query: {"name": "БСБО-05-19"});
-    var resDecoded = ResponseGroup.deserialize(res);
-    var group = resDecoded.group;
-    return group;
-  }
 
-  Future<Group> futureGroup;
   CalendarController _calendarController;
+  final groupStream = StreamController<Group>();
+
+
+
 
   @override
   void initState() {
     readGroup().then((value) {
       Data.group = value;
     });
-    Data.group.showInfo();
     super.initState();
     _calendarController = CalendarController();
-    futureGroup = fetchGroup();
+
   }
 
   @override
   void dispose() {
     _calendarController.dispose();
+    groupStream.close();
     super.dispose();
   }
 
@@ -58,13 +54,12 @@ class _ThirdScreenState extends State<ThirdScreen> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: FutureBuilder<Group>(
-        future: futureGroup,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            snapshot.data.showInfo();
-            Data.group = snapshot.data;
-            Group group = snapshot.data;
+      body: StreamBuilder(
+        stream: groupStream.stream,
+        builder: (context, AsyncSnapshot<dynamic> snapshot) {
+          if (!snapshot.hasData) {return CircularProgressIndicator();}
+            DateTime selectedDate = _calendarController.selectedDay;
+            final selectedDays = Data.group.days[selectedDate];
             return Column(children: [
               TableCalendar(
                 calendarController: _calendarController,
@@ -95,30 +90,24 @@ class _ThirdScreenState extends State<ThirdScreen> {
                 daysOfWeekStyle: DaysOfWeekStyle(
                     weekendStyle: TextStyle(color: Colors.white),
                     weekdayStyle: TextStyle(color: Colors.white)),
+
               ),
               Expanded(
-                  // child: ListView.builder(
-                  //   itemCount: lessons.length,
-                  //   itemBuilder: (context, index){
-                  //     return lessonBar(lessons[index].cabinet, lessons[index].teacherName, lessons[index].numberOfLesson, lessons[index].lessonType, lessons[index].subject);
-                  //   })
                   child: ListView.builder(
-                      itemCount: group.days["ПЯТНИЦА"].length,
+                      itemCount: selectedDays.length,
                       itemBuilder: (context, index) {
                         return lessonBar(
-                            group.days["ПЯТНИЦА"][index].cabinet,
-                            group.days["ПЯТНИЦА"][index].teacherName,
-                            group.days["ПЯТНИЦА"][index].numberLesson
+                            selectedDays[index].cabinet,
+                            selectedDays[index].teacherName,
+                            selectedDays[index].numberLesson
                                 .toString(),
-                            group.days["ПЯТНИЦА"][index].typeOfLesson,
-                            group.days["ПЯТНИЦА"][index].subject);
+                            selectedDays[index].typeOfLesson,
+                            selectedDays[index].subject);
                       }))
             ]);
-          } else {
-            return Column();
           }
-        },
-      ),
+
+      )
     );
   }
 }
@@ -129,22 +118,25 @@ Row lessonBar(String cabinet, String teacherName, String numberOfLesson,
     Column(
       children: [
         Container(
-            padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 10),
+            padding: EdgeInsets.only(top: 20, bottom: 10),
             child: Text(cabinet,
+                textDirection: TextDirection.ltr,
                 style: TextStyle(
                   color: Colors.white,
                 ))),
         SizedBox(
             width: 30,
             height: 1,
-            child: DecoratedBox(
+            child: Container(
+              padding: EdgeInsets.only(left: 15, right: 15),
               decoration: BoxDecoration(
                 color: Colors.white,
               ),
             )),
         Container(
-          padding: EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 10),
+          padding: EdgeInsets.only(bottom: 20, top: 10),
           child: Text(numberOfLesson,
+              textDirection: TextDirection.ltr,
               style: TextStyle(
                 color: Colors.white,
               )),
@@ -158,14 +150,14 @@ Row lessonBar(String cabinet, String teacherName, String numberOfLesson,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 15),
+            padding: EdgeInsets.only(left: 15, right: 5, top: 20, bottom: 15),
             child: Text(subject,
                 style: TextStyle(
                   color: Colors.white,
                 ))),
         SizedBox(height: 10),
         Container(
-            padding: EdgeInsets.only(left: 20, right: 20),
+            padding: EdgeInsets.only(left: 15, right: 20),
             child: Text(teacherName,
                 style: TextStyle(
                   color: Colors.white,
@@ -176,8 +168,8 @@ Row lessonBar(String cabinet, String teacherName, String numberOfLesson,
       child: Container(),
     ),
     Container(
-      padding: EdgeInsets.only(right: 20, top: 20),
-      child: Text(lessonType, style: TextStyle(color: Colors.white)),
+      padding: EdgeInsets.only(right: 10, top: 20),
+      child: Text(lessonType.toUpperCase(), style: TextStyle(color: Colors.white)),
     )
   ]);
 }
