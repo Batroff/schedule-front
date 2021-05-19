@@ -7,6 +7,8 @@ import 'package:schedule/models/group.dart';
 import 'package:schedule/services/save.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'dart:async';
+import 'package:jiffy/jiffy.dart';
+
 
 class Data {
   static Group group;
@@ -26,9 +28,12 @@ class _ThirdScreenState extends State<ThirdScreen> {
   String dayCurrent;
 
 
+
+
   void dayChange(int){
     weekDay = _calendarController.selectedDay.weekday;
     _days.add(weekDay);
+
   }
 
 
@@ -42,6 +47,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
     _days = new StreamController<int>();
     _days.add(1);
   }
+
 
 
   @override
@@ -74,6 +80,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
       }
       return dayCurrent;
     }
+
 
 
   @override
@@ -120,8 +127,8 @@ class _ThirdScreenState extends State<ThirdScreen> {
                     weekdayStyle: TextStyle(color: Colors.white)),
                 onDaySelected: (date,events, holidays){
                   setState(() {
-
                     dayChange(_calendarController.selectedDay.weekday);
+
                   });
                 }
 
@@ -133,15 +140,17 @@ class _ThirdScreenState extends State<ThirdScreen> {
                       return ListView.builder(
                       itemCount: Data.group.days[dayFormat()].length,
                       itemBuilder: (context, index) {
-                        return lessonBar(
-                          Data.group.days[dayFormat()][index].cabinet,
-                          Data.group.days[dayFormat()][index].teacherName,
-                          Data.group.days[dayFormat()][index].numberLesson
-                              .toString(),
-                          Data.group.days[dayFormat()][index].typeOfLesson,
-                          Data.group.days[dayFormat()][index].subject);
 
-                      });
+                            return lessonBar(
+                              Data.group.days[dayFormat()][index].cabinet,
+                              Data.group.days[dayFormat()][index].teacherName,
+                              Data.group.days[dayFormat()][index].numberLesson
+                                  .toString(),
+                              Data.group.days[dayFormat()][index].typeOfLesson,
+                              Data.group.days[dayFormat()][index].subject);
+
+
+                        });
                 }
               )
               )
@@ -154,10 +163,18 @@ class _ThirdScreenState extends State<ThirdScreen> {
 
 Row lessonBar(String cabinet, String teacherName, String numberOfLesson,
     String lessonType, String subject) {
+    if (subject.length > 35){
+      String fullSubject = subject;
+      subject = subject.substring(0, 35);
+      subject = subject.substring(0, 34) + ".";
+    }
   return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
+            width:35,
+            margin: EdgeInsets.only(left: 10),
             padding: EdgeInsets.only(top: 20, bottom: 10),
             child: Text(cabinet,
                 textDirection: TextDirection.ltr,
@@ -165,15 +182,16 @@ Row lessonBar(String cabinet, String teacherName, String numberOfLesson,
                   color: Colors.white,
                 ))),
         SizedBox(
-            width: 30,
+            width: 35,
             height: 1,
             child: Container(
-              padding: EdgeInsets.only(left: 15, right: 15),
               decoration: BoxDecoration(
                 color: Colors.white,
               ),
             )),
         Container(
+          width: 35,
+          margin: EdgeInsets.only(left: 10),
           padding: EdgeInsets.only(bottom: 20, top: 10),
           child: Text(numberOfLesson,
               textDirection: TextDirection.ltr,
@@ -191,7 +209,8 @@ Row lessonBar(String cabinet, String teacherName, String numberOfLesson,
       children: [
         Container(
             padding: EdgeInsets.only(left: 15, right: 5, top: 20, bottom: 15),
-            child: Text(subject,
+            child: Text(
+                subject,
                 style: TextStyle(
                   color: Colors.white,
                 ))),
@@ -207,11 +226,27 @@ Row lessonBar(String cabinet, String teacherName, String numberOfLesson,
     Expanded(
       child: Container(),
     ),
-    Container(
-      padding: EdgeInsets.only(right: 10, top: 20),
-      child: Text(
-          lessonType.toUpperCase(), style: TextStyle(color: Colors.white)),
+    Column(
+      children: [
+        Container(
+          padding: EdgeInsets.only(left: 5, right: 10, top: 20),
+          child: Text(
+              lessonType.toUpperCase(), style: TextStyle(color: Colors.white)),
+        ),
+        Container(
+          padding: EdgeInsets.only(left: 5, right: 10, top: 10),
+          child:IconButton(
+            onPressed: (){},
+            icon: Icon(
+              Icons.remove_red_eye,
+              color: Colors.white,
+            ),
+            iconSize: 10.0,
+          )
+        )
+      ],
     )
+
   ]);
 }
 }
