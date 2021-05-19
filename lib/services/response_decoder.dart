@@ -10,8 +10,8 @@ class ResponseGroup {
   ResponseGroup(this.errorMsg, this.group);
 
   ResponseGroup.fromJson(Map<String, dynamic> json) :
-      errorMsg = json['ErrorMsg'],
-      group = Group.fromJson(json['Group']);
+      errorMsg = json['errorMsg'],
+      group = Group.fromJson(json['group']);
 
   static ResponseGroup deserialize(json) {
     Map<String, dynamic> jsonDecoded = jsonDecode(json);
@@ -27,8 +27,8 @@ class ResponseGroupList {
   ResponseGroupList(this.errorMsg, this.groupList);
 
   ResponseGroupList.fromJson(Map<String, dynamic> json) :
-      errorMsg = json['ErrorMsg'],
-      groupList = Map<String, bool>.from(json['GroupList']['map']);
+      errorMsg = json['errorMsg'],
+      groupList = Map<String, bool>.from(json['groupList']);
 
   static ResponseGroupList deserialize(json) {
     Map<String, dynamic> jsonDecoded = jsonDecode(json);
