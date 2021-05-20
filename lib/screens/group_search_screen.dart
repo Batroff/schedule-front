@@ -17,6 +17,8 @@ class SecondScreenSearch extends State<SecondScreen> {
   List<String> _groupList = [];
 
   List<String> _groupListForDisplay = [];
+
+  String groupName;
   
   Future<Map<String, bool>> fetchGroupList() async {
     //var res = await new Client("192.168.1.45:8080").requestJson(method: "GET", location: "/api/groupList/");
@@ -30,7 +32,7 @@ class SecondScreenSearch extends State<SecondScreen> {
   }
 
   Future<String> fetchGroupJson() async {
-    //var res = await new Client("192.168.1.45:8080").requestJson(method: "GET", location: "/api/group/", query: {"name": "БСБО-05-19"});//надо подтянуть из поля с номером группы саму группу в query
+    //var res = await new Client("192.168.1.45:8080").requestJson(method: "GET", location: "/api/group/", query: {"name": groupName});//надо подтянуть из поля с номером группы саму группу в query
     var directory = await getExternalStorageDirectory();
     var file = File('${directory.path}/group.txt');
     print(directory.path);
@@ -58,16 +60,6 @@ class SecondScreenSearch extends State<SecondScreen> {
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(38, 38, 38, 1),
           title: Text('Выбор группы'),
-          actions: <Widget>[
-            IconButton(
-              onPressed: () async{
-                var groupJson = await fetchGroupJson();
-                await saveGroup(groupJson);
-                Navigator.pushNamed(context, '/third');
-                },
-              icon: Icon(Icons.arrow_forward),
-            )
-          ],
         ),
         body: ListView.builder(
           itemBuilder: (context, index) {
@@ -98,24 +90,91 @@ class SecondScreenSearch extends State<SecondScreen> {
   }
 
   _listItem(index) {
-    return Card(
+    if (_groupListForDisplay[index] == null){
+      return Card(
       color: Color.fromRGBO(38, 38, 38, 1),
       child: Padding(
         padding: const EdgeInsets.only(top: 32.0, bottom: 32.0, left: 16.0, right: 16.0),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              _groupListForDisplay[index],
-              style: TextStyle(
-                color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
+            groupButton(index),
           ],
         ),
       ),
-    );
+    );}
+    else{
+      return Card(
+        color: Color.fromRGBO(38, 38, 38, 1),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 32.0, bottom: 32.0, left: 16.0, right: 16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                _groupListForDisplay[index],
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold
+                )
+              ),
+              SizedBox(width: 100),
+              Row(
+                children: <Widget>[
+                 subGroupsButton(index, "1"),
+                  SizedBox(width: 15),
+                  subGroupsButton(index, "2")
+                ],
+              )
+            ],
+          ),
+        ),
+      );}
+    }
+
+
+  ElevatedButton groupButton(index){
+    return ElevatedButton(
+      child: Text(_groupListForDisplay[index]),
+      onPressed: () async{
+        groupName = _groupListForDisplay[index];
+        var groupJson = await fetchGroupJson();
+        await saveGroup(groupJson);
+        Navigator.pushNamed(context, '/third');
+      },
+      style: ElevatedButton.styleFrom(
+        primary: Color.fromRGBO(38, 38, 38, 1),
+        textStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold
+        ),
+      ));
   }
-}
+
+
+  ElevatedButton subGroupsButton(index, String subGroup){
+    return ElevatedButton(
+      child: Text(subGroup),
+      onPressed: () async{
+        groupName = _groupListForDisplay[index];
+        var groupJson = await fetchGroupJson();
+        await saveGroup(groupJson);
+        Navigator.pushNamed(context, '/third');
+      },
+      style: ElevatedButton.styleFrom(
+        primary: Color.fromRGBO(38, 38, 38, 1),
+        side: BorderSide(color: Colors.white, width: 1),
+        textStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.bold
+        ),
+      ));
+
+  }
+  }
+
+
+
