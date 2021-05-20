@@ -166,69 +166,73 @@ class _ThirdScreenState extends State<ThirdScreen> {
 
   Row lessonBar(String cabinet, String teacherName, String numberOfLesson,
       String lessonType, String subject) {
-    if (subject.length > 35) {
-      String fullSubject = subject;
-      subject = subject.substring(0, 35);
-      subject = subject.substring(0, 34) + ".";
-    }
+
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-              width: 35,
-              margin: EdgeInsets.only(left: 10),
-              padding: EdgeInsets.only(top: 20, bottom: 10),
-              child: Text(cabinet,
-                  textDirection: TextDirection.ltr,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ))),
-          SizedBox(
-              width: 35,
-              height: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                ),
-              )),
-          Container(
-            width: 35,
-            margin: EdgeInsets.only(left: 10),
-            padding: EdgeInsets.only(bottom: 20, top: 10),
-            child: Text(numberOfLesson,
-                textDirection: TextDirection.ltr,
-                style: TextStyle(
-                  color: Colors.white,
-                )),
-          )
-        ],
-      ),
+      Flexible(
+        flex: 10,
+          child:Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                  width: 30,
+                  margin: EdgeInsets.only(left: 10),
+                  padding: EdgeInsets.only(top: 20, bottom: 10),
+                  child: Text(cabinet,
+                      textDirection: TextDirection.ltr,
+                      style: TextStyle(
+                        color: Colors.white,
+                      ))),
+              SizedBox(
+                  width: 35,
+                  height: 1,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                    ),
+                  )),
+              Container(
+                width: 35,
+                margin: EdgeInsets.only(left: 10),
+                padding: EdgeInsets.only(bottom: 20, top: 10),
+                child: Text(numberOfLesson,
+                    textDirection: TextDirection.ltr,
+                    style: TextStyle(
+                      color: Colors.white,
+                    )),
+              )
+            ],
+          ), ),
+
       SizedBox(
         height: 10,
       ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-              padding: EdgeInsets.only(left: 15, right: 5, top: 20, bottom: 15),
-              child: Text(subject,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ))),
-          SizedBox(height: 10),
-          Container(
-              padding: EdgeInsets.only(left: 15, right: 20),
-              child: Text(teacherName,
-                  style: TextStyle(
-                    color: Colors.white,
-                  )))
-        ],
-      ),
+      Flexible(
+        fit: FlexFit.tight,
+        flex: 80,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                  padding: EdgeInsets.only(left: 15, right: 5, top: 20, bottom: 15),
+                  child: Text(subject,
+                      style: TextStyle(
+                        color: Colors.white,
+                      ))),
+              SizedBox(height: 10),
+              Container(
+                  padding: EdgeInsets.only(left: 15, right: 20),
+                  child: Text(teacherName,
+                      style: TextStyle(
+                        color: Colors.white,
+                      )))
+            ],
+          ),),
       Expanded(
         child: Container(),
       ),
-      Column(
+      Flexible(
+        flex: 10,
+          child: Column(
         children: [
           Container(
             padding: EdgeInsets.only(left: 5, right: 10, top: 20),
@@ -246,7 +250,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
                 iconSize: 10.0,
               ))
         ],
-      )
+      ))
     ]);
   }
 }
