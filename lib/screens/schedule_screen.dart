@@ -7,7 +7,7 @@ import 'package:schedule/models/group.dart';
 import 'package:schedule/services/save.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'dart:async';
-import 'package:jiffy/jiffy.dart';
+import 'package:week_of_year/week_of_year.dart';
 
 
 class Data {
@@ -26,7 +26,8 @@ class _ThirdScreenState extends State<ThirdScreen> {
   int weekDay = 1;
   StreamController<int> _days;
   String dayCurrent;
-
+  DateTime _chosenDate = DateTime.now();
+  int weekNumber;
 
 
 
@@ -48,6 +49,14 @@ class _ThirdScreenState extends State<ThirdScreen> {
     _days.add(1);
   }
 
+
+  int weekNumb(){
+    weekNumber = _chosenDate.weekOfYear;
+    weekNumber = weekNumber - 5;
+    print(weekNumber);
+    return weekNumber;
+
+  }
 
 
   @override
@@ -128,7 +137,8 @@ class _ThirdScreenState extends State<ThirdScreen> {
                 onDaySelected: (date,events, holidays){
                   setState(() {
                     dayChange(_calendarController.selectedDay.weekday);
-
+                    _chosenDate = date;
+                    weekNumb();
                   });
                 }
 
@@ -140,17 +150,17 @@ class _ThirdScreenState extends State<ThirdScreen> {
                       return ListView.builder(
                       itemCount: Data.group.days[dayFormat()].length,
                       itemBuilder: (context, index) {
-
-                            return lessonBar(
+                        if (Data.group.days[dayFormat()][index].occurrenceLesson[weekNumber] = true) {
+                          print(weekNumber);
+                          return lessonBar(
                               Data.group.days[dayFormat()][index].cabinet,
                               Data.group.days[dayFormat()][index].teacherName,
                               Data.group.days[dayFormat()][index].numberLesson
                                   .toString(),
                               Data.group.days[dayFormat()][index].typeOfLesson,
                               Data.group.days[dayFormat()][index].subject);
-
-
-                        });
+                        }
+                        return Container(color: Color.fromRGBO(38, 38, 38, 1),);});
                 }
               )
               )
