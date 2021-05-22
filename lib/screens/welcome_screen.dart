@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MainScreen extends StatelessWidget{
   @override
@@ -24,7 +25,7 @@ class MainScreen extends StatelessWidget{
                   child: Text('Расписание МИРЭА',
                       textDirection: TextDirection.ltr,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: GoogleFonts.ubuntu(
                         color: Colors.white,
                         fontSize:24,
                       )
@@ -38,7 +39,7 @@ class MainScreen extends StatelessWidget{
                     style: ElevatedButton.styleFrom(
                         primary: Colors.black,
                         padding: EdgeInsets.symmetric(horizontal: 75, vertical: 20),
-                        textStyle: TextStyle(
+                        textStyle: GoogleFonts.ubuntu(
                           fontSize: 18,
                           color: Colors.white,
                         )

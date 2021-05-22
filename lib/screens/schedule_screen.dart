@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:schedule/models/group.dart';
 import 'package:schedule/services/save.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -89,7 +90,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
           backgroundColor: Colors.transparent,
           title: Text(
             "Расписание",
-            style: TextStyle(color: Colors.white),
+            style: GoogleFonts.ubuntu(color: Colors.white),
           ),
         ),
         body: Column(children: [
@@ -101,8 +102,8 @@ class _ThirdScreenState extends State<ThirdScreen> {
               headerStyle: HeaderStyle(
                 centerHeaderTitle: true,
                 formatButtonVisible: true,
-                formatButtonTextStyle: TextStyle(color: Colors.white),
-                titleTextStyle: TextStyle(color: Colors.white, fontSize: 18),
+                formatButtonTextStyle: GoogleFonts.ubuntu(color: Colors.white),
+                titleTextStyle: GoogleFonts.ubuntu(color: Colors.white, fontSize: 18),
                 leftChevronIcon: Icon(
                   Icons.arrow_back_ios,
                   color: Colors.white,
@@ -117,11 +118,11 @@ class _ThirdScreenState extends State<ThirdScreen> {
                 rightChevronMargin: EdgeInsets.only(right: 10),
               ),
               calendarStyle: CalendarStyle(
-                  weekdayStyle: TextStyle(color: Colors.white),
-                  weekendStyle: TextStyle(color: Colors.white)),
+                  weekdayStyle: GoogleFonts.ubuntu(color: Colors.white),
+                  weekendStyle: GoogleFonts.ubuntu(color: Colors.white)),
               daysOfWeekStyle: DaysOfWeekStyle(
-                  weekendStyle: TextStyle(color: Colors.white),
-                  weekdayStyle: TextStyle(color: Colors.white)),
+                  weekendStyle: GoogleFonts.ubuntu(color: Colors.white),
+                  weekdayStyle: GoogleFonts.ubuntu(color: Colors.white)),
               onDaySelected: (date, events, holidays) {
                 setState(() {
                   dayChange(_calendarController.selectedDay.weekday);
@@ -177,7 +178,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
                   padding: EdgeInsets.only(top: 20, bottom: 10),
                   child: Text(cabinet,
                       textDirection: TextDirection.ltr,
-                      style: TextStyle(
+                      style: GoogleFonts.ubuntu(
                         color: Colors.white,
                       ))),
               SizedBox(
@@ -194,7 +195,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
                 padding: EdgeInsets.only(bottom: 20, top: 10),
                 child: Text(numberOfLesson,
                     textDirection: TextDirection.ltr,
-                    style: TextStyle(
+                    style: GoogleFonts.ubuntu(
                       color: Colors.white,
                     )),
               )
@@ -213,14 +214,14 @@ class _ThirdScreenState extends State<ThirdScreen> {
               Container(
                   padding: EdgeInsets.only(left: 15, right: 5, top: 20, bottom: 15),
                   child: Text(subject,
-                      style: TextStyle(
+                      style: GoogleFonts.ubuntu(
                         color: Colors.white,
                       ))),
               SizedBox(height: 10),
               Container(
                   padding: EdgeInsets.only(left: 15, right: 20),
                   child: Text(teacherName,
-                      style: TextStyle(
+                      style: GoogleFonts.ubuntu(
                         color: Colors.white,
                       )))
             ],
@@ -235,7 +236,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
           Container(
             padding: EdgeInsets.only(left: 5, right: 10, top: 20),
             child: Text(lessonType.toUpperCase(),
-                style: TextStyle(color: Colors.white)),
+                style: GoogleFonts.ubuntu(color: Colors.white)),
           ),
           Container(
               padding: EdgeInsets.only(left: 5, right: 10, top: 10),
