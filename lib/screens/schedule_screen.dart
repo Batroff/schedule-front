@@ -139,8 +139,6 @@ class _ThirdScreenState extends State<ThirdScreen> {
                           itemBuilder: (context, index) {
                             if (Data.group.days[dayFormat()][index]
                                 .occurrenceLesson[weekNumber]) {
-                              print(weekNumber);
-                              print(dayFormat());
                               return lessonBar(
                                   Data.group.days[dayFormat()][index].cabinet,
                                   Data.group.days[dayFormat()][index]

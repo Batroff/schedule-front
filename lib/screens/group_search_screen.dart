@@ -14,6 +14,8 @@ class SecondScreen extends StatefulWidget {
 }
 
 class SecondScreenSearch extends State<SecondScreen> {
+  Map<String, bool> _subgroupList;
+
   List<String> _groupList = [];
 
   List<String> _groupListForDisplay = [];
@@ -21,22 +23,38 @@ class SecondScreenSearch extends State<SecondScreen> {
   String groupName;
   
   Future<Map<String, bool>> fetchGroupList() async {
-    //var res = await new Client("192.168.1.45:8080").requestJson(method: "GET", location: "/api/groupList/");
-    var directory = await getExternalStorageDirectory();
-    var file = File('${directory.path}/groupList.txt');
-    String res = await file.readAsString();
+    var res = await new Client("192.168.1.149:8080").requestJson(method: "GET", location: "/api/groupList/");
+    // var directory = await getExternalStorageDirectory();
+    // var file = File('${directory.path}/groupList.txt');
+    // String res = await file.readAsString();
     var resDecoded = ResponseGroupList.deserialize(res);
     Map<String, bool> groupList = resDecoded.groupList;
     print(groupList);
     return groupList;
   }
 
-  Future<String> fetchGroupJson() async {
-    //var res = await new Client("192.168.1.45:8080").requestJson(method: "GET", location: "/api/group/", query: {"name": groupName});//надо подтянуть из поля с номером группы саму группу в query
-    var directory = await getExternalStorageDirectory();
-    var file = File('${directory.path}/group.txt');
-    print(directory.path);
-    String res = await file.readAsString();
+  Future<String> fetchGroupJson([String subgroup = ""]) async {
+    var res;
+    if (subgroup == "") {
+      res = await new Client("192.168.1.149:8080").requestJson(
+          method: "GET",
+          location: "/api/group/",
+          query: {
+            "name": groupName
+          });
+    } else {
+      res = await new Client("192.168.1.149:8080").requestJson(
+          method: "GET",
+          location: "/api/group/",
+          query: {
+            "name": groupName,
+            "subgroup": subgroup,
+          });
+    }
+    // var directory = await getExternalStorageDirectory();
+    // var file = File('${directory.path}/group.txt');
+    // print(directory.path);
+    // String res = await file.readAsString();
     var resDecoded = ResponseGroup.deserialize(res);
     String groupJson = jsonEncode(resDecoded.group.toJson());
     return groupJson;
@@ -46,6 +64,7 @@ class SecondScreenSearch extends State<SecondScreen> {
   void initState() {
     fetchGroupList().then((groupList) {
       setState(() {
+        _subgroupList = groupList;
         _groupList = groupList.keys.toList();
         print(_groupList);
         _groupListForDisplay = _groupList;
@@ -90,7 +109,7 @@ class SecondScreenSearch extends State<SecondScreen> {
   }
 
   _listItem(index) {
-    if (_groupListForDisplay[index] == null){
+    if (!_subgroupList[_groupListForDisplay[index]]){
       return Card(
       color: Color.fromRGBO(38, 38, 38, 1),
       child: Padding(
@@ -159,7 +178,7 @@ class SecondScreenSearch extends State<SecondScreen> {
       child: Text(subGroup),
       onPressed: () async{
         groupName = _groupListForDisplay[index];
-        var groupJson = await fetchGroupJson();
+        var groupJson = await fetchGroupJson(subGroup);
         await saveGroup(groupJson);
         Navigator.pushNamed(context, '/third');
       },
