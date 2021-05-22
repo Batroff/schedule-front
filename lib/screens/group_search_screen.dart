@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:schedule/models/group.dart';
 import 'package:schedule/services/http_client.dart';
@@ -23,10 +24,10 @@ class SecondScreenSearch extends State<SecondScreen> {
   String groupName;
   
   Future<Map<String, bool>> fetchGroupList() async {
-    var res = await new Client("192.168.1.149:8080").requestJson(method: "GET", location: "/api/groupList/");
-    // var directory = await getExternalStorageDirectory();
-    // var file = File('${directory.path}/groupList.txt');
-    // String res = await file.readAsString();
+    //var res = await new Client("192.168.1.149:8080").requestJson(method: "GET", location: "/api/groupList/");
+    var directory = await getExternalStorageDirectory();
+    var file = File('${directory.path}/groupList.txt');
+    String res = await file.readAsString();
     var resDecoded = ResponseGroupList.deserialize(res);
     Map<String, bool> groupList = resDecoded.groupList;
     print(groupList);
@@ -36,12 +37,19 @@ class SecondScreenSearch extends State<SecondScreen> {
   Future<String> fetchGroupJson([String subgroup = ""]) async {
     var res;
     if (subgroup == "") {
-      res = await new Client("192.168.1.149:8080").requestJson(
-          method: "GET",
-          location: "/api/group/",
-          query: {
-            "name": groupName
-          });
+      var directory = await getExternalStorageDirectory();
+       var file = File('${directory.path}/group.txt');
+       print(directory.path);
+       String res = await file.readAsString();
+      var resDecoded = ResponseGroup.deserialize(res);
+      String groupJson = jsonEncode(resDecoded.group.toJson());
+      return groupJson;
+     // res = await new Client("192.168.1.149:8080").requestJson(
+       //   method: "GET",
+         // location: "/api/group/",
+          //query: {
+           // "name": groupName
+          //});
     } else {
       res = await new Client("192.168.1.149:8080").requestJson(
           method: "GET",
@@ -55,9 +63,9 @@ class SecondScreenSearch extends State<SecondScreen> {
     // var file = File('${directory.path}/group.txt');
     // print(directory.path);
     // String res = await file.readAsString();
-    var resDecoded = ResponseGroup.deserialize(res);
-    String groupJson = jsonEncode(resDecoded.group.toJson());
-    return groupJson;
+    //var resDecoded = ResponseGroup.deserialize(res);
+    //String groupJson = jsonEncode(resDecoded.group.toJson());
+    //return groupJson;
   }
 
   @override
@@ -78,7 +86,9 @@ class SecondScreenSearch extends State<SecondScreen> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(38, 38, 38, 1),
-          title: Text('Выбор группы'),
+          title: Text('Выбор группы',
+             style: GoogleFonts.ubuntu()),
+
         ),
         body: ListView.builder(
           itemBuilder: (context, index) {
@@ -117,7 +127,16 @@ class SecondScreenSearch extends State<SecondScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            groupButton(index),
+            Text(
+                _groupListForDisplay[index],
+                style: GoogleFonts.ubuntu(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold
+                )
+            ),
+            SizedBox(width: 125),
+            groupButton(index)
           ],
         ),
       ),
@@ -132,7 +151,7 @@ class SecondScreenSearch extends State<SecondScreen> {
             children: <Widget>[
               Text(
                 _groupListForDisplay[index],
-                style: TextStyle(
+                style: GoogleFonts.ubuntu(
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.bold
@@ -155,7 +174,9 @@ class SecondScreenSearch extends State<SecondScreen> {
 
   ElevatedButton groupButton(index){
     return ElevatedButton(
-      child: Text(_groupListForDisplay[index]),
+      child: ElevatedButton.icon(
+        icon: Icon( Icons.arrow_forward),
+        label: Text(''),
       onPressed: () async{
         groupName = _groupListForDisplay[index];
         var groupJson = await fetchGroupJson();
@@ -164,12 +185,8 @@ class SecondScreenSearch extends State<SecondScreen> {
       },
       style: ElevatedButton.styleFrom(
         primary: Color.fromRGBO(38, 38, 38, 1),
-        textStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold
-        ),
-      ));
+        side: BorderSide(color: Colors.white, width: 1),
+      )));
   }
 
 
@@ -185,7 +202,7 @@ class SecondScreenSearch extends State<SecondScreen> {
       style: ElevatedButton.styleFrom(
         primary: Color.fromRGBO(38, 38, 38, 1),
         side: BorderSide(color: Colors.white, width: 1),
-        textStyle: TextStyle(
+        textStyle: GoogleFonts.ubuntu(
             color: Colors.white,
             fontSize: 14,
             fontWeight: FontWeight.bold
